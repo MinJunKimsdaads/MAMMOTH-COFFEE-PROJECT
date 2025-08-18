@@ -11,12 +11,24 @@ export const getDataFilteredSales = async (list) => {
     try{
        const data = [];
        await Promise.all(
-        list.foreach(async (i) => {
+        list.map(async (i) => {
             const code = i.code;
-            const res = await fetch(`https://mammoth-coffee-project.onrender.com/api/sales/search?code=${code}`);
-            console.log(res);
+            const res = await fetch(`https://mammoth-coffee-project.onrender.com/api/sales/search?code=${code}`).then((result)=>{
+                return result.json();
+            }).then((data)=>{
+                if(data.lastSales && data.lastProfit){
+                    const lastSales = Number(data.lastSales);
+                    const lastProfit = Number(data.lastProfit);
+                    console.log(lastProfit);
+                    console.log(lastSales);
+                    if(lastProfit > 0 && lastSales > 0){
+                        console.log(i);
+                    }
+                }
+            });
         })
        ) 
+       return data;
     }catch(e){
         console.error(e);
     }
