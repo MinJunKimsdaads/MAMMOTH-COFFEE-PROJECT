@@ -18,8 +18,8 @@ export const getSalesData = async (req, res) => {
 
     $(".cop_analysis .sub_section tbody").each((_, el)=>{
         const trs = $(el).find("tr");
-        const lastSales = $(trs[0]).find('.last').text().replace(/\s+/g, "");;
-        const lastProfit = $(trs[1]).find('.last').text().replace(/\s+/g, "");;
+        const lastSales = $(trs[0]).find('.last').text().replace(/\s+/g, "") ?? 0;
+        const lastProfit = $(trs[1]).find('.last').text().replace(/\s+/g, "") ?? 0;
 
         // data.push({ lastSales, lastProfit});
         data['lastSales'] = lastSales;

@@ -4,9 +4,8 @@ const Kospi200 = () => {
     const [list, setList] = useState([]);
     useEffect(()=>{
         const fetchData = async () => {
-            const res = await fetch('https://finance.naver.com/sise/entryJongmok.naver?order=change_rate&isRightDirection=false&page=1');
-            const html = await res.text();
-            console.log(html);
+            const res = await fetch('https://mammoth-coffee-project.onrender.com/api/kospi200/all');
+            console.log(res);
         }
 
         fetchData();
