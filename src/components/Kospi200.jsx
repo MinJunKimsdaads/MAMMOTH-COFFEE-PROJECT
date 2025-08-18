@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getDataFilteredSales, getDataFilteredUpRate } from "../services/services";
+import { get5DaysData, getDataFilteredSales, getDataFilteredUpRate } from "../services/services";
 
 const Kospi200 = () => {
     const [list, setList] = useState([]);
@@ -10,7 +10,7 @@ const Kospi200 = () => {
             }).then(async (list)=>{
                 const filteredUpRate = getDataFilteredUpRate(list,-0.2,-1.0);
                 const filteredSales = await getDataFilteredSales(filteredUpRate);
-                console.log(filteredSales);
+                await get5DaysData(filteredSales);
             });
         }
 

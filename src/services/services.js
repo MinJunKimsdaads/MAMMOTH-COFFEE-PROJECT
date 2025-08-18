@@ -31,3 +31,91 @@ export const getDataFilteredSales = async (list) => {
         console.error(e);
     }
 }
+
+//5일 지표 데이터
+export const get5DaysData = async (list) => {
+    try{
+       const result = [];
+       await Promise.all(
+        list.map(async (i) => {
+            const code = i.code;
+            const res = await fetch(`https://mammoth-coffee-project.onrender.com/api/indicator/search?code=${code}`).then((result)=>{
+                return result.json();
+            }).then((data)=>{
+                console.log(data);
+            });
+        })
+       ) 
+       return result;
+    }catch(e){
+        console.error(e);
+    }
+}
+
+//거래량 추세 계산
+const calcAmountScore = (data) => {
+  const volumes = data.map(d => Number(d.amount));
+  const latestVolume = volumes[0]; // 최신 거래량
+  const avgVolume = volumes.reduce((a, b) => a + b, 0) / volumes.length;
+
+  const ratio = latestVolume / avgVolume;
+
+  let score = 0;
+  if (ratio >= 1.5) score = 30;
+  else if (ratio >= 1.0) score = 15;
+
+  return { ratio, score };
+}
+//변동성 점수 계산
+const calcVolatilityScore = (data) => {
+  const closes = data.map(d => Number(d.close));
+
+  // 일일 수익률 계산 (어제 대비 오늘)
+  const returns = [];
+  for (let i = 0; i < closes.length - 1; i++) {
+    const r = (closes[i] - closes[i + 1]) / closes[i + 1];
+    returns.push(r);
+  }
+
+  // 표준편차 계산
+  const mean = returns.reduce((a, b) => a + b, 0) / returns.length;
+  const variance = returns.reduce((a, b) => a + (b - mean) ** 2, 0) / returns.length;
+  const stdev = Math.sqrt(variance);
+
+  // 점수화 (예시: 상위 변동성 선호)
+  let score = 0;
+  if (stdev > 0.015) score = 20; // 1.5% 이상
+  else if (stdev > 0.01) score = 10; // 1% 이상
+
+  return { stdev, score };
+}
+//단기 추세 계산
+const calcTrendScore = (data) => {
+const closes = data.map(d => Number(d.close));
+  const latestClose = closes[0];
+  const sma5 = closes.reduce((a, b) => a + b, 0) / closes.length;
+
+  const diffRate = (latestClose - sma5) / sma5;
+
+  let score = 0;
+  if (diffRate >= 0) score = 20;
+  else if (diffRate >= -0.01) score = 10; // -1%까지는 가산점
+
+  return { diffRate, score };
+}
+
+//최종 점수 합산
+const scoreStock = (data) => {
+  const volume = calcAmountScore(data);
+  const volatility = calcVolatilityScore(data);
+  const trend = calcTrendScore(data);
+
+  const total = volume.score + volatility.score + trend.score;
+
+  return {
+    volume,
+    volatility,
+    trend,
+    total
+  };
+} 

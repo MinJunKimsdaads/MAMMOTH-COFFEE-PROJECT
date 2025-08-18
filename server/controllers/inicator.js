@@ -8,7 +8,7 @@ export const get5DaysData = async (req, res) => {
     const list = [];
 
     const response = await fetch(
-        `https://finance.naver.com/item/sise_day.naver?code=005930`,
+        `https://finance.naver.com/item/sise_day.naver?code=${code}`,
         {
             headers: {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0 Safari/537.36",
