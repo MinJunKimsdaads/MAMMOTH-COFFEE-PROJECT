@@ -42,7 +42,12 @@ export const get5DaysData = async (list) => {
             const res = await fetch(`https://mammoth-coffee-project.onrender.com/api/indicator/search?code=${code}`).then((result)=>{
                 return result.json();
             }).then((data)=>{
-                console.log(data);
+                const value = scoreStock(data);
+                const newData = {
+                    ...i,
+                    ...value
+                }
+                result.push(newData);
             });
         })
        ) 
@@ -119,3 +124,10 @@ const scoreStock = (data) => {
     total
   };
 } 
+
+export const getRankedData = (data,count) => {
+    const sortedByScore = data.sort((a,b) => b.total - a.total);
+    return sortedByScore.slice(0,count);
+}
+
+

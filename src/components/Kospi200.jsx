@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { get5DaysData, getDataFilteredSales, getDataFilteredUpRate } from "../services/services";
+import { get5DaysData, getDataFilteredSales, getDataFilteredUpRate, getRankedData } from "../services/services";
 
 const Kospi200 = () => {
     const [list, setList] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(()=>{
         const fetchData = async () => {
             await fetch('https://mammoth-coffee-project.onrender.com/api/kospi200/all').then((result)=>{
@@ -10,7 +11,10 @@ const Kospi200 = () => {
             }).then(async (list)=>{
                 const filteredUpRate = getDataFilteredUpRate(list,-0.2,-1.0);
                 const filteredSales = await getDataFilteredSales(filteredUpRate);
-                await get5DaysData(filteredSales);
+                const addedIndicator = await get5DaysData(filteredSales);
+                const scoredData = getRankedData(addedIndicator,10);
+                setList(scoredData);
+                setIsLoading(false);
             });
         }
 
@@ -18,7 +22,30 @@ const Kospi200 = () => {
     },[])
     return(
         <>
-            
+            {
+                isLoading ? <div>계산 중</div>:<div>
+                    {list.map((i,idx)=>{
+                        return (
+                            <div key={i.code} style={{marginBottom:'15px'}}>
+                                <div>{idx+1}.</div>
+                                <div>
+                                    <span>종목명: </span>
+                                    <span>{i.name}</span>
+                                </div>
+                                <div>
+                                    <span>가격: </span>
+                                    <span>{i.price}</span>
+                                </div>
+                                <div>
+                                    <span>점수: </span>
+                                    <span>{i.total}</span>
+                                </div>
+
+                            </div>
+                        )
+                    })}
+                </div>
+            }
         </>
     )
 }
