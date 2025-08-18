@@ -9,7 +9,7 @@ export const getDataFilteredUpRate = (list,upRate,downRate) => {
 //매출, 영업익에 따른 필터링
 export const getDataFilteredSales = async (list) => {
     try{
-       const data = [];
+       const result = [];
        await Promise.all(
         list.map(async (i) => {
             const code = i.code;
@@ -19,16 +19,14 @@ export const getDataFilteredSales = async (list) => {
                 if(data.lastSales && data.lastProfit){
                     const lastSales = Number(data.lastSales);
                     const lastProfit = Number(data.lastProfit);
-                    console.log(lastProfit);
-                    console.log(lastSales);
                     if(lastProfit > 0 && lastSales > 0){
-                        console.log(i);
+                        result.push(i);
                     }
                 }
             });
         })
        ) 
-       return data;
+       return result;
     }catch(e){
         console.error(e);
     }

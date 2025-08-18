@@ -8,9 +8,9 @@ const Kospi200 = () => {
             await fetch('https://mammoth-coffee-project.onrender.com/api/kospi200/all').then((result)=>{
                 return result.json();
             }).then(async (list)=>{
-                const filteredUpRate = getDataFilteredUpRate(list,0,-1.0);
-                const test = await getDataFilteredSales(filteredUpRate);
-                // console.log(test);
+                const filteredUpRate = getDataFilteredUpRate(list,-0.2,-1.0);
+                const filteredSales = await getDataFilteredSales(filteredUpRate);
+                console.log(filteredSales);
             });
         }
 
