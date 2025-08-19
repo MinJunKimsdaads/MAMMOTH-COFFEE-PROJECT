@@ -3,6 +3,7 @@ import cors from 'cors';
 import kospi200Routes from './routes/kospi200Routes.js';
 import salesRoutes from './routes/salesRoutes.js';
 import indicatorRountes from './routes/indicatorRoutes.js';
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 

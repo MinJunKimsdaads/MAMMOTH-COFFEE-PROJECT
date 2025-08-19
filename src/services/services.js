@@ -13,7 +13,7 @@ export const getDataFilteredSales = async (list) => {
        await Promise.all(
         list.map(async (i) => {
             const code = i.code;
-            const res = await fetch(`https://mammoth-coffee-project.onrender.com/api/sales/search?code=${code}`).then((result)=>{
+            await fetch(`https://mammoth-coffee-project.onrender.com/api/sales/search?code=${code}`).then((result)=>{
                 return result.json();
             }).then((data)=>{
                 if(data.lastSales && data.lastProfit){
@@ -39,7 +39,7 @@ export const get5DaysData = async (list) => {
        await Promise.all(
         list.map(async (i) => {
             const code = i.code;
-            const res = await fetch(`https://mammoth-coffee-project.onrender.com/api/indicator/search?code=${code}`).then((result)=>{
+            await fetch(`https://mammoth-coffee-project.onrender.com/api/indicator/search?code=${code}`).then((result)=>{
                 return result.json();
             }).then((data)=>{
                 const value = scoreStock(data);
@@ -55,6 +55,45 @@ export const get5DaysData = async (list) => {
     }catch(e){
         console.error(e);
     }
+}
+
+//외국인, 기관 매매 추세 데이터
+export const getSaleDirectionData = async (list) => {
+    try{
+        const result = [];
+        await Promise.all(
+            list.map(async (i) => {
+                const code = i.code;
+                await fetch(`https://mammoth-coffee-project.onrender.com/api/indicator/search?code=${code}`).then((result)=>{
+                    return result.json();
+                }).then((data)=>{
+                    const value = scoreStock(data);
+                    const newData = {
+                        ...i,
+                        ...value
+                    }
+                    result.push(newData);
+                });
+            })
+        ) 
+        return result;
+    }catch(e){
+        console.error(e);
+    }
+}
+
+//거래대금 추세 계산
+const calValueScore = (data) => {
+    const values = data.map(d => Number(d.close) * Number(d.amount));
+    const latestValue = values[0];
+    const avgValue = values.reduce((a,b)=> a+b,0) / values.length;
+    
+    const ratio = latestValue / avgValue;
+
+    let score = 0;
+    if (ratio >= 1.5) score = 30;
+    else if (ratio >= 1.0) score = 15;
+    return {ratio, score};
 }
 
 //거래량 추세 계산
@@ -114,12 +153,14 @@ const scoreStock = (data) => {
   const volume = calcAmountScore(data);
   const volatility = calcVolatilityScore(data);
   const trend = calcTrendScore(data);
+  const value = calValueScore(data);
 
   const total = volume.score + volatility.score + trend.score;
 
   return {
     volume,
     volatility,
+    value,
     trend,
     total
   };

@@ -5,7 +5,9 @@ export const getSalesData = async (req, res) => {
   try {
     const code = req.query.code || null;
     if(!code) res.status(500).json({ error: "empty code" });   
-    const data = {};
+    const data = {
+      trading:[]
+    };
 
     const response = await fetch(
         `https://finance.naver.com/item/main.naver?code=${code}`
@@ -15,6 +17,18 @@ export const getSalesData = async (req, res) => {
     const html = iconv.decode(buffer, "EUC-KR");
 
     const $ = cheerio.load(html);
+
+    $(".invest_trend .right tbody").each((_, el)=>{
+        const trs = $(el).find("tr");
+        for(let i=1;i<=5;i++){
+            const tds = $(trs[i]).find("td");
+            const list = {
+                foreigner:$(tds[2]).find('em').text().replace(/\s+/g, "").replace(/,/g, ""),
+                organ:$(tds[3]).find('em').text().replace(/\s+/g, "").replace(/,/g, ""),
+            }
+            data['trading'].push(list)
+        }
+    })
 
     $(".cop_analysis .sub_section tbody").each((_, el)=>{
         const trs = $(el).find("tr");
