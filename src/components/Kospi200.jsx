@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { get5DaysData, getDataFilteredSales, getDataFilteredUpRate, getRankedData } from "../services/services";
+import { get5DaysData, getDataFilteredSales, getDataFilteredUpRate, getRankedData, scoreStock } from "../services/services";
 
 const Kospi200 = () => {
     const [list, setList] = useState([]);
@@ -9,11 +9,12 @@ const Kospi200 = () => {
             await fetch('https://mammoth-coffee-project.onrender.com/api/kospi200/all').then((result)=>{
                 return result.json();
             }).then(async (list)=>{
-                const filteredUpRate = getDataFilteredUpRate(list,-0.2,-1.0);
+                const filteredUpRate = getDataFilteredUpRate(list,1.0,0);
                 const filteredSales = await getDataFilteredSales(filteredUpRate);
                 const addedIndicator = await get5DaysData(filteredSales);
-                const scoredData = getRankedData(addedIndicator,10);
-                setList(scoredData);
+                const addedScoredData = scoreStock(addedIndicator);
+                const rankedData = getRankedData(addedScoredData,1000);
+                setList(rankedData);
                 setIsLoading(false);
             });
         }

@@ -20,7 +20,10 @@ export const getDataFilteredSales = async (list) => {
                     const lastSales = Number(data.lastSales);
                     const lastProfit = Number(data.lastProfit);
                     if(lastProfit > 0 && lastSales > 0){
-                        result.push(i);
+                        result.push({
+                            ...i,
+                            trading:data.trading,
+                        });
                     }
                 }
             });
@@ -42,11 +45,9 @@ export const get5DaysData = async (list) => {
             await fetch(`https://mammoth-coffee-project.onrender.com/api/indicator/search?code=${code}`).then((result)=>{
                 return result.json();
             }).then((data)=>{
-                console.log(data);
-                const value = scoreStock(data);
                 const newData = {
                     ...i,
-                    ...value
+                    indicator:data,
                 }
                 result.push(newData);
             });
@@ -125,35 +126,51 @@ const calcTrendScore = (data) => {
 }
 
 //최근 5일 순매수 계산
-// const calcTradingScore = (data) => {
-//   const foreigner = data.foreigner.slice(0,5).reduce((a,b) => a+b,0);
-//   const institution = data.institution.slice(0,5).reduce((a,b) => a+b,0);
+const calcTradingScore = (data) => {
+  let score = 0;
+  let foreigner = 0;
+  let organ = 0;
+  data.forEach(i => {
+    foreigner += Number(i.foreigner);
+    organ += Number(i.organ);
+  });
 
-//   let score = 0;
-//   if (foreigner > 0) score += 10;
-//   if (institution > 0) score += 10;
+  if (foreigner > 0) score += 10;
+  if (organ > 0) score += 10;
 
-//   return { foreigner, institution, score };
-// }
+  return { foreigner, organ, score };
+}
 
 
 //최종 점수 합산
-const scoreStock = (data) => {
-  const volume = calcAmountScore(data);
-  const volatility = calcVolatilityScore(data);
-  const trend = calcTrendScore(data);
-  const value = calValueScore(data);
+export const scoreStock = (data) => {
+  return data.map((i)=>{
+    const volume = calcAmountScore(i.indicator); //거래대금
+    const volatility = calcVolatilityScore(i.indicator); //외국인/기관
+    const trend = calcTrendScore(i.indicator); //단기 추세
+    const value = calValueScore(i.indicator); //변동성
+    const tradingSum = calcTradingScore(i.trading); //거래량
 
-  const total = volume.score + volatility.score + trend.score;
+    // 가중치 적용
+    const total =
+      (value.score / 30) * 30 +          // 거래대금: 30점 만점
+      (tradingSum.score / 20) * 30 +     // 외국인/기관: 30점 만점
+      (trend.score / 20) * 20 +          // 단기 추세: 20점 만점
+      (volatility.score / 20) * 10 +     // 변동성: 10점 만점
+      (volume.score / 30) * 10;          // 거래량: 10점 만점
 
-  return {
-    volume,
-    volatility,
-    value,
-    trend,
-    total
-  };
-} 
+      return {
+        ...i,
+        volume,
+        volatility,
+        value,
+        trend,
+        tradingSum,
+        total
+    };
+  })
+}
+
 
 export const getRankedData = (data,count) => {
     const sortedByScore = data.sort((a,b) => b.total - a.total);
