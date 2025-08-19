@@ -22,7 +22,6 @@ export const get5DaysData = async (req, res) => {
     const html = iconv.decode(buffer, "EUC-KR");
 
     const $ = cheerio.load(html);
-    console.log(html);
 
     $(".type2").each((_, el)=>{
         const trs = $(el).find("tr");

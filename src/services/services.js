@@ -42,6 +42,7 @@ export const get5DaysData = async (list) => {
             await fetch(`https://mammoth-coffee-project.onrender.com/api/indicator/search?code=${code}`).then((result)=>{
                 return result.json();
             }).then((data)=>{
+                console.log(data);
                 const value = scoreStock(data);
                 const newData = {
                     ...i,
@@ -52,31 +53,6 @@ export const get5DaysData = async (list) => {
         })
        ) 
        return result;
-    }catch(e){
-        console.error(e);
-    }
-}
-
-//외국인, 기관 매매 추세 데이터
-export const getSaleDirectionData = async (list) => {
-    try{
-        const result = [];
-        await Promise.all(
-            list.map(async (i) => {
-                const code = i.code;
-                await fetch(`https://mammoth-coffee-project.onrender.com/api/indicator/search?code=${code}`).then((result)=>{
-                    return result.json();
-                }).then((data)=>{
-                    const value = scoreStock(data);
-                    const newData = {
-                        ...i,
-                        ...value
-                    }
-                    result.push(newData);
-                });
-            })
-        ) 
-        return result;
     }catch(e){
         console.error(e);
     }
@@ -135,7 +111,7 @@ const calcVolatilityScore = (data) => {
 }
 //단기 추세 계산
 const calcTrendScore = (data) => {
-const closes = data.map(d => Number(d.close));
+  const closes = data.map(d => Number(d.close));
   const latestClose = closes[0];
   const sma5 = closes.reduce((a, b) => a + b, 0) / closes.length;
 
@@ -147,6 +123,19 @@ const closes = data.map(d => Number(d.close));
 
   return { diffRate, score };
 }
+
+//최근 5일 순매수 계산
+// const calcTradingScore = (data) => {
+//   const foreigner = data.foreigner.slice(0,5).reduce((a,b) => a+b,0);
+//   const institution = data.institution.slice(0,5).reduce((a,b) => a+b,0);
+
+//   let score = 0;
+//   if (foreigner > 0) score += 10;
+//   if (institution > 0) score += 10;
+
+//   return { foreigner, institution, score };
+// }
+
 
 //최종 점수 합산
 const scoreStock = (data) => {
