@@ -18,6 +18,13 @@ export const getSalesData = async (req, res) => {
 
     const $ = cheerio.load(html);
 
+    $(".tab_con1 .gray .f_down").each((_, el)=>{
+        const em = $(el).find("em");
+        const sector = em.text().replace(/\s+/g, "").replace(/,/g, "").replace("%", "");
+        
+        data['sector'] = sector;
+    })
+
     $(".invest_trend .right tbody").each((_, el)=>{
         const trs = $(el).find("tr");
         for(let i=1;i<=5;i++){

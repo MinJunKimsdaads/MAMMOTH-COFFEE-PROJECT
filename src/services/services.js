@@ -141,6 +141,15 @@ const calcTradingScore = (data) => {
   return { foreigner, organ, score };
 }
 
+const calcSectorScore = (sector) => {
+    let score = 0;
+    const sector = Number(sector);
+    if(sector > 0){
+        score += 10;
+    }
+    return {score};
+}
+
 
 //최종 점수 합산
 export const scoreStock = (data) => {
@@ -150,6 +159,7 @@ export const scoreStock = (data) => {
     const trend = calcTrendScore(i.indicator); //단기 추세
     const value = calValueScore(i.indicator); //변동성
     const tradingSum = calcTradingScore(i.trading); //거래량
+    const sector = calcSectorScore(i.sector);
 
     // 가중치 적용
     const total =
@@ -158,6 +168,8 @@ export const scoreStock = (data) => {
       (trend.score / 20) * 20 +          // 단기 추세: 20점 만점
       (volatility.score / 20) * 10 +     // 변동성: 10점 만점
       (volume.score / 30) * 10;          // 거래량: 10점 만점
+      (volume.sector / 30) * 10;          // 거래량: 10점 만점
+
 
       return {
         ...i,
@@ -166,6 +178,7 @@ export const scoreStock = (data) => {
         value,
         trend,
         tradingSum,
+        sector,
         total
     };
   })
