@@ -20,7 +20,7 @@ export const getSalesData = async (req, res) => {
 
     $(".tab_con1 .gray .f_down").each((_, el)=>{
         const em = $(el).find("em");
-        const sector = em.text().replace(/\s+/g, "").replace(/,/g, "").replace("%", "");
+        const sector = em.text().replace(/,/g, "").replace("%", "");
         
         data['sector'] = sector;
     })
