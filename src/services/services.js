@@ -166,8 +166,8 @@ export const scoreStock = (data) => {
       (tradingSum.score / 20) * 30 +     // 외국인/기관: 30점 만점
       (trend.score / 20) * 20 +          // 단기 추세: 20점 만점
       (volatility.score / 20) * 10 +     // 변동성: 10점 만점
-      (volume.score / 30) * 10;          // 거래량: 10점 만점
-      (volume.sector / 30) * 10;          // 거래량: 10점 만점
+      (volume.score / 30) * 10 +          // 거래량: 10점 만점
+      (volume.sector / 30) * 10;          // 동일업종 등락률: 10점 만점
 
 
       return {
