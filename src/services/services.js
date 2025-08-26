@@ -143,8 +143,7 @@ const calcTradingScore = (data) => {
 
 const calcSectorScore = (sector) => {
     let score = 0;
-    const sector = Number(sector);
-    if(sector > 0){
+    if(Number(sector) > 0){
         score += 10;
     }
     return {score};
