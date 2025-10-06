@@ -1,4 +1,6 @@
 import { handleCors } from "../services/corsConfig.js";
+import * as cheerio from "cheerio";
+import iconv from "iconv-lite";
 
 export default async function handler(req, res) {
     if(!handleCors(req, res)) return;
