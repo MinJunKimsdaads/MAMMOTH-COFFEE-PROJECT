@@ -1,4 +1,4 @@
-const allowedOrigins = [];
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
 
 export function handleCors(req, res){
     const origin = req.headers.origin;

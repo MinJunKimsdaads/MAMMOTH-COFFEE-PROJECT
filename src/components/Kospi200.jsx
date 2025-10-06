@@ -6,7 +6,7 @@ const Kospi200 = () => {
     const [isLoading, setIsLoading] = useState(true);
     useEffect(()=>{
         const fetchData = async () => {
-            await fetch('https://mammoth-coffee-project.onrender.com/api/kospi200/all').then((result)=>{
+            await fetch('https://mammoth-coffee-project.vercel.app/api/kospi200/all').then((result)=>{
                 return result.json();
             }).then(async (list)=>{
                 const filteredUpRate = getDataFilteredUpRate(list,1.0,0);

@@ -13,7 +13,7 @@ export const getDataFilteredSales = async (list) => {
        await Promise.all(
         list.map(async (i) => {
             const code = i.code;
-            await fetch(`https://mammoth-coffee-project.onrender.com/api/sales/search?code=${code}`).then((result)=>{
+            await fetch(`https://mammoth-coffee-project.vercel.app/api/sales/search?code=${code}`).then((result)=>{
                 return result.json();
             }).then((data)=>{
                 if(data.lastSales && data.lastProfit){
@@ -42,7 +42,7 @@ export const get5DaysData = async (list) => {
        await Promise.all(
         list.map(async (i) => {
             const code = i.code;
-            await fetch(`https://mammoth-coffee-project.onrender.com/api/indicator/search?code=${code}`).then((result)=>{
+            await fetch(`https://mammoth-coffee-project.vercel.app/api/indicator/search?code=${code}`).then((result)=>{
                 return result.json();
             }).then((data)=>{
                 const newData = {
