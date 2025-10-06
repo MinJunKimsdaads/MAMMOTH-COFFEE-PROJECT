@@ -1,4 +1,7 @@
+import { handleCors } from "../services/corsConfig.js";
+
 export default async function handler(req, res) {
+    if(!handleCors(req, res)) return;
     try{
         const code = req.query.code || null;
         if(!code) res.status(500).json({ error: "empty code" });   

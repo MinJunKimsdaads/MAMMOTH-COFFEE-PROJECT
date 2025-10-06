@@ -1,4 +1,7 @@
+import { handleCors } from "../services/corsConfig.js";
+
 export default async function handler(req, res) {
+    if(!handleCors(req, res)) return;
     try{
         const data = [];
 
